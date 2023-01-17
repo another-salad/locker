@@ -1,28 +1,61 @@
-﻿class MainClass
+﻿using System.CommandLine;
+
+namespace locker;
+
+class Locker
 {
     static int Main(string[] args)
     {
-        if (args.Length == 1 && HelpRequired(args[0]))
-        {
-            DisplayHelp();
-            return 1;
-        }
-        return 0;
+        var sourceOption = new Option<string>(
+            name: "--source",
+            description: "The source file/folder to encrypt/decrypt."
+        );
+
+        var outputOption = new Option<string>(
+            name: "--output",
+            description: "The output directory."
+        );
+
+        var rootCommand = new RootCommand("Locker - file/folder encryptor/decryptor");
+        var encrypt = new Command("-e", "Encrypts the file/folder")
+            {
+                sourceOption,
+                outputOption
+            };
+        var decrypt = new Command("-d", "Decrypts the file/folder")
+            {
+                sourceOption,
+                outputOption
+            };
+        rootCommand.AddCommand(encrypt);
+        rootCommand.AddCommand(decrypt);
+
+        encrypt.SetHandler(async (source, output) =>
+            {
+                await Encrypt(source, output);
+            },
+            sourceOption,
+            outputOption
+        );
+
+        decrypt.SetHandler(async (source, output) =>
+            {
+                await Decrypt(source, output);
+            },
+            sourceOption,
+            outputOption
+        );
+
+        return rootCommand.InvokeAsync(args).Result;
     }
 
-    private static bool HelpRequired(string param)
-    {
-        string normalizedParam = param.ToLower().Normalize();
-        return normalizedParam == "-h" || normalizedParam == "--help" || normalizedParam == "/?";
+    internal static async Task Encrypt(string source, string output) {
+        // todo
+        await Task.Delay(1);
     }
 
-    private static void DisplayHelp() {
-        string helpText = $"Command line params{Environment.NewLine}{Environment.NewLine}" +
-                          $"'-e': Encrypt the source file/directory{Environment.NewLine}" +
-                          $"'-d': Decrypt the source file/directory{Environment.NewLine}" +
-                          $"'-source': The source file/directory{Environment.NewLine}" +
-                          $"'-out': The output directory{Environment.NewLine}{Environment.NewLine}";
-        Console.Write(helpText);
+    internal static async Task Decrypt(string source, string output) {
+        // todo
+        await Task.Delay(1);
     }
-
 }
